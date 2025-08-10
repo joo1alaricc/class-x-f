@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class X-F</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .bg-dominant-1 { background-color: #9EBBCE; }
+        .bg-dominant-2 { background-color: #B4BFC1; }
+        .bg-dominant-3 { background-color: #D2D0CC; }
+        .bg-dominant-4 { background-color: #3B5C75; }
+        .bg-dominant-5 { background-color: #787878; }
+        .text-dominant-4 { color: #3B5C75; }
+        .border-dominant-4 { border-color: #3B5C75; }
+        
+        .glass {
+            background: rgba(210, 208, 204, 0.15);
+            backdrop-filter: blur(70px);
+            -webkit-backdrop-filter: blur(70px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+        }
+        
+        .header-glass {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+            background: rgba(158, 187, 206, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .music-wave {
+            display: inline-block;
+            height: 20px;
+            width: 3px;
+            border-radius: 3px;
+            background: #3B5C75;
+            margin: 0 1px;
+            animation: wave 1s linear infinite;
+        }
+        
+        .music-wave:nth-child(1) { animation-delay: 0s; }
+        .music-wave:nth-child(2) { animation-delay: 0.1s; }
+        .music-wave:nth-child(3) { animation-delay: 0.2s; }
+        .music-wave:nth-child(4) { animation-delay: 0.3s; }
+        .music-wave:nth-child(5) { animation-delay: 0.4s; }
+        
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.2); }
+            50% { transform: scaleY(1); }
+        }
+        
+        .info-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .song-card {
+            transition: all 0.3s ease;
+        }
+        
+        .song-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .contact-button {
+            transition: all 0.3s ease;
+        }
+        
+        .contact-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .player-button {
+            transition: all 0.2s ease;
+        }
+        
+        .player-button:hover {
+            transform: scale(1.1);
+        }
+        
+        .current-song {
+            background: rgba(59, 92, 117, 0.25);
+            border-left: 4px solid #3B5C75;
+        }
+        
+        /* Content padding to account for fixed header */
+        .content-wrapper {
+            padding-top: 80px; /* Increased spacing from header */
+        }
+        
+        /* Enhanced blur effect on scroll */
+        .content-section {
+            transition: backdrop-filter 0.3s ease;
+        }
+        
+        /* Safari specific fix for backdrop-filter */
+        @supports (-webkit-backdrop-filter: none) {
+            .glass, .header-glass {
+                -webkit-backdrop-filter: blur(70px);
+                backdrop-filter: blur(70px);
+            }
+        }
+        
+        /* Firefox fallback */
+        @supports not (backdrop-filter: none) {
+            .glass, .header-glass {
+                background: rgba(210, 208, 204, 0.9);
+            }
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(210, 208, 204, 0.3);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(59, 92, 117, 0.5);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 92, 117, 0.7);
+        }
+        
+        /* Smooth animations for member list */
+        .member-list-container {
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        
+        .member-list-container.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Smooth hover effects */
+        .smooth-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .smooth-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Music player specific styles */
+        .music-player {
+            padding: 20px;
+            transition: left 0.3s ease;
+            z-index: 999;
+            overflow-y: auto;
+            margin-top: 20px; /* Additional spacing from header */
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-dominant-3 relative overflow-x-hidden">
+    <!-- Animated background elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-20 -left-20 w-64 h-64 bg-dominant-1 rounded-full opacity-20 floating"></div>
+        <div class="absolute top-1/2 right-0 w-96 h-96 bg-dominant-2 rounded-full opacity-20 floating" style="animation-delay: 1s;"></div>
+        <div class="absolute bottom-20 left-1/3 w-48 h-48 bg-dominant-4 rounded-full opacity-15 floating" style="animation-delay: 2s;"></div>
+    </div>
+
+    <!-- Header - Now fixed with enhanced iOS-like glass effect -->
+    <header class="header-glass">
+        <div class="text-center w-full">
+            <h1 class="text-2xl md:text-3xl font-bold text-dominant-4 mb-0 tracking-wide">
+                CLASS X-F
+            </h1>
+            <p class="text-xs md:text-sm text-dominant-5 mt-0">Welcome to our class universe</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content-wrapper relative z-10 max-w-6xl mx-auto px-6 py-6">
+        <!-- Music Player -->
+        <div class="music-player glass rounded-3xl shadow-2xl mb-12 text-center border border-white/20 smooth-hover">
+            <h2 class="text-2xl font-bold text-dominant-4 mb-4 flex items-center justify-center gap-2">
+                <i class="fas fa-music"></i> Class Playlist
+            </h2>
+
+            <!-- Player -->
+            <div class="flex flex-col items-center gap-4 mb-6">
+                <div class="info-container">
+                    <span id="currentSong" class="text-dominant-4 font-medium text-xl">Select a song to play</span>
+                    <span id="currentArtist" class="text-dominant-5 text-lg"></span>
+                </div>
+                
+                <!-- Progress bar -->
+                <div class="w-full max-w-md">
+                    <div class="h-1 bg-dominant-2 rounded-full overflow-hidden">
+                        <div id="progressBar" class="h-full bg-dominant-4 w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+                
+                <!-- Player Controls -->
+                <div class="flex items-center gap-4">
+                    <button id="prevBtn" class="player-button bg-dominant-4 text-dominant-1 p-3 rounded-full hover:bg-dominant-5 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg smooth-hover">
+                        <i class="fas fa-step-backward"></i>
+                    </button>
+                    <button id="playPauseBtn" 
+                        class="player-button bg-dominant-4 text-dominant-1 p-4 rounded-full hover:bg-dominant-5 transition-colors duration-300 shadow-lg smooth-hover">
+                        <i id="playPauseIcon" class="fas fa-play"></i>
+                    </button>
+                    <button id="nextBtn" class="player-button bg-dominant-4 text-dominant-1 p-3 rounded-full hover:bg-dominant-5 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg smooth-hover">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                </div>
+                
+                <div id="musicVisualizer" class="flex gap-1 opacity-0 transition-opacity duration-300 mt-2">
+                    <div class="music-wave"></div>
+                    <div class="music-wave"></div>
+                    <div class="music-wave"></div>
+                    <div class="music-wave"></div>
+                    <div class="music-wave"></div>
+                </div>
+            </div>
+
+            <!-- Song List -->
+            <div id="songList" class="grid grid-cols-1 gap-2 mt-6 max-h-80 overflow-y-auto p-2 rounded-2xl">
+                <!-- Songs will be generated here -->
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <!-- NGL Button -->
+            <a href="https://ngl.link/x.future?fbclid=PAQ0xDSwMFnztleHRuA2FlbQIxMQABpyQmqqPj-zheJu65v3bXw2UUACGs_T1vhQZsJEQ6sKzggl_D0YjnikoBWldI_aem_YYRhnDAJ4UZjgN7im671HA" target="_blank" class="block bg-dominant-4 text-dominant-1 font-semibold text-lg text-center p-6 rounded-3xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 glass hover:bg-opacity-90 border border-white/20 smooth-hover">
+                <i class="fas fa-comment-dots mr-2"></i> NGL
+            </a>
+
+            <!-- WhatsApp Channel Button -->
+            <a href="https://whatsapp.com/channel/0029Vb6jJw6EquiLFwAcgE1f" target="_blank" class="block bg-dominant-4 text-dominant-1 font-semibold text-lg text-center p-6 rounded-3xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 glass hover:bg-opacity-90 border border-white/20 smooth-hover">
+                <i class="fab fa-whatsapp mr-2"></i> CHANNEL WHATSAPP
+            </a>
+
+            <!-- Instagram Button -->
+            <a href="https://www.instagram.com/x.futuresm4ba?igsh=MTJsZ2N4NHNnMzE5aA==" target="_blank" class="block bg-dominant-4 text-dominant-1 font-semibold text-lg text-center p-6 rounded-3xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 glass hover:bg-opacity-90 border border-white/20 smooth-hover">
+                <i class="fab fa-instagram mr-2"></i> Instagram
+            </a>
+
+            <!-- Members Button -->
+            <button id="membersButton" class="block bg-dominant-4 text-dominant-1 font-semibold text-lg text-center p-6 rounded-3xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 glass hover:bg-opacity-90 border border-white/20 smooth-hover">
+                <i class="fas fa-users mr-2"></i> MEMBER
+            </button>
+        </div>
+
+        <!-- Members List -->
+        <div id="membersList" class="hidden glass rounded-3xl shadow-2xl p-6 border border-white/20">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-dominant-4">Class Members</h2>
+                <button id="closeMembers" class="text-dominant-5 hover:text-dominant-4 text-2xl font-bold hover:rotate-90 transition-transform duration-300 smooth-hover">
+                    ✕
+                </button>
+            </div>
+            
+            <div id="membersContainer" class="member-list-container">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Member items will be generated by JavaScript -->
+                </div>
+                
+                <p class="text-center text-dominant-5 mt-4 text-sm">
+                    Total: <span id="memberCount">0</span> members
+                </p>
+            </div>
+        </div>
+
+        <!-- Welcome Message -->
+        <div class="mt-6 glass rounded-3xl shadow-2xl p-6 text-center border border-white/20 smooth-hover">
+            <h2 class="text-2xl font-bold text-dominant-4 mb-3 pulse">Welcome to Class X-F!</h2>
+            <p class="text-base text-dominant-5 leading-relaxed">
+                This is our official class website. Here you can find important links, 
+                connect with classmates, and stay updated with class activities. 
+                Let's make this year memorable together!
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="relative z-10 bg-dominant-4 text-dominant-1 py-4 mt-12">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <p class="text-dominant-1 text-sm">
+                © 2024 Class X-F • Made with ❤️ by Class X-F Students
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Member data
+        const members = [
+            { name: "Andi Pratama", instagram: "#" },
+            { name: "Bella Putri", instagram: "#" },
+            { name: "Cahya Wijaya", instagram: "#" },
+            { name: "Dewi Sartika", instagram: "#" },
+            { name: "Eko Saputra", instagram: "#" },
+            { name: "Fira Amalia", instagram: "#" },
+            { name: "Gita Permata", instagram: "#" },
+            { name: "Hendra Kusuma", instagram: "#" },
+            { name: "Intan Purnama", instagram: "#" },
+            { name: "Joko Susanto", instagram: "#" },
+            { name: "Karin Novilda", instagram: "#" },
+            { name: "Luki Hermawan", instagram: "#" },
+            { name: "Maya Sari", instagram: "#" },
+            { name: "Nanda Putra", instagram: "#" },
+            { name: "Oki Setiana", instagram: "#" },
+            { name: "Putri Wulandari", instagram: "#" },
+            { name: "Raka Pratama", instagram: "#" },
+            { name: "Sinta Dewi", instagram: "#" },
+            { name: "Toni Saputra", instagram: "#" },
+            { name: "Umi Kalsum", instagram: "#" },
+            { name: "Vina Lestari", instagram: "#" },
+            { name: "Wahyu Nugroho", instagram: "#" },
+            { name: "Xena Putri", instagram: "#" },
+            { name: "Yudi Kurniawan", instagram: "#" },
+            { name: "Zahra Fauziah", instagram: "#" },
+            { name: "Aldi Setiawan", instagram: "#" },
+            { name: "Bima Perdana", instagram: "#" },
+            { name: "Cindy Lestari", instagram: "#" },
+            { name: "Doni Hermawan", instagram: "#" },
+            { name: "Elsa Purnama", instagram: "#" },
+            { name: "Farhan Akbar", instagram: "#" },
+            { name: "Gina Safitri", instagram: "#" },
+            { name: "Hana Ayu", instagram: "#" },
+            { name: "Irfan Maulana", instagram: "#" }
+        ];
+
+        // Song data with fixed links (removed trailing spaces)
+        const songs = [
+            { name: "Homesick", artist: "Wave to earth", link: "https://files.catbox.moe/qnszwo.mpeg" },
+            { name: "Kita", artist: "Sheila on 7", link: "https://files.catbox.moe/5mgzv2.mpeg" }
+        ];
+
+        // Audio element
+        let audio = null;
+        let isPlaying = false;
+        let currentSongIndex = 0;
+        let progressInterval = null;
+
+        // DOM elements
+        const membersList = document.getElementById('membersList');
+        const membersButton = document.getElementById('membersButton');
+        const closeMembers = document.getElementById('closeMembers');
+        const songListContainer = document.getElementById('songList');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const playPauseIcon = document.getElementById('playPauseIcon');
+        const progressBar = document.getElementById('progressBar');
+        const musicVisualizer = document.getElementById('musicVisualizer');
+        const currentSongDisplay = document.getElementById('currentSong');
+        const currentArtistDisplay = document.getElementById('currentArtist');
+        const membersContainer = document.getElementById('membersContainer');
+
+        // Function to toggle members list
+        function toggleMembers() {
+            const isVisible = membersList.classList.contains('hidden');
+            
+            if (isVisible) {
+                // Show members
+                membersList.classList.remove('hidden');
+                // Trigger reflow
+                void membersContainer.offsetWidth;
+                // Add show class for smooth animation
+                setTimeout(() => {
+                    membersContainer.classList.add('show');
+                }, 10);
+                
+                const container = membersContainer.querySelector('.grid');
+                container.innerHTML = '';
+                
+                members.forEach(member => {
+                    const memberDiv = document.createElement('div');
+                    memberDiv.className = 'glass p-4 rounded-xl border border-dominant-5 hover:shadow-md transition-all duration-300 transform hover:scale-105 border border-white/20 smooth-hover';
+                    
+                    memberDiv.innerHTML = `
+                        <h3 class="text-base font-semibold text-dominant-4 mb-2">${member.name}</h3>
+                        <a href="${member.instagram}" class="inline-block bg-dominant-4 text-dominant-1 px-3 py-1 rounded-lg text-xs font-medium hover:shadow-md transition-all duration-300 smooth-hover">
+                            <i class="fab fa-instagram mr-1"></i> Instagram
+                        </a>
+                    `;
+                    container.appendChild(memberDiv);
+                });
+                
+                document.getElementById('memberCount').textContent = members.length;
+            } else {
+                // Hide members with smooth animation
+                membersContainer.classList.remove('show');
+                setTimeout(() => {
+                    membersList.classList.add('hidden');
+                }, 400);
+            }
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            if (audio && audio.duration) {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                progressBar.style.width = percent + '%';
+            }
+        }
+        
+        // Previous song
+        function prevSong() {
+            if (currentSongIndex > 0) {
+                playSong(currentSongIndex - 1);
+            }
+        }
+        
+        // Next song
+        function nextSong() {
+            if (currentSongIndex < songs.length - 1) {
+                playSong(currentSongIndex + 1);
+            } else {
+                // If at the end, loop back to first song
+                playSong(0);
+            }
+        }
+        
+        // Update song list highlighting
+        function updateSongListHighlighting() {
+            const songCards = document.querySelectorAll('.song-card');
+            songCards.forEach((card, index) => {
+                if (index === currentSongIndex) {
+                    card.classList.add('current-song');
+                } else {
+                    card.classList.remove('current-song');
+                }
+            });
+        }
+
+        // Play song function
+        function playSong(index) {
+            // Update current song index
+            currentSongIndex = index;
+            const song = songs[index];
+            
+            // Update UI
+            currentSongDisplay.textContent = song.name;
+            currentArtistDisplay.textContent = song.artist;
+            
+            // Enable navigation buttons
+            prevBtn.disabled = (index === 0);
+            nextBtn.disabled = false;
+            
+            // Clear previous audio if exists
+            if (audio) {
+                clearInterval(progressInterval);
+                audio.pause();
+                audio = null;
+            }
+            
+            // Create new audio element
+            audio = new Audio();
+            audio.src = song.link.trim(); // Trim whitespace from URL
+            
+            // Add event listeners
+            audio.addEventListener('timeupdate', updateProgress);
+            audio.addEventListener('ended', nextSong);
+            
+            // Play the audio
+            audio.play().then(() => {
+                isPlaying = true;
+                playPauseIcon.classList.remove('fa-play');
+                playPauseIcon.classList.add('fa-pause');
+                musicVisualizer.classList.remove('opacity-0');
+                musicVisualizer.classList.add('opacity-100');
+                
+                // Start progress update interval
+                clearInterval(progressInterval);
+                progressInterval = setInterval(updateProgress, 100);
+                
+                // Update song list highlighting
+                updateSongListHighlighting();
+            }).catch(error => {
+                console.error('Playback failed:', error);
+                alert('Failed to play audio. This might be due to browser restrictions or the audio source being unavailable.');
+                isPlaying = false;
+                playPauseIcon.classList.add('fa-play');
+                playPauseIcon.classList.remove('fa-pause');
+                musicVisualizer.classList.add('opacity-0');
+                musicVisualizer.classList.remove('opacity-100');
+            });
+        }
+
+        // Play/Pause button
+        playPauseBtn.addEventListener('click', () => {
+            if (!audio) {
+                // If no audio is loaded, play the first song
+                playSong(0);
+                return;
+            }
+            
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+                playPauseIcon.classList.add('fa-play');
+                playPauseIcon.classList.remove('fa-pause');
+                musicVisualizer.classList.add('opacity-0');
+                musicVisualizer.classList.remove('opacity-100');
+                clearInterval(progressInterval);
+            } else {
+                audio.play().then(() => {
+                    isPlaying = true;
+                    playPauseIcon.classList.remove('fa-play');
+                    playPauseIcon.classList.add('fa-pause');
+                    musicVisualizer.classList.remove('opacity-0');
+                    musicVisualizer.classList.add('opacity-100');
+                    
+                    // Resume progress update interval
+                    clearInterval(progressInterval);
+                    progressInterval = setInterval(updateProgress, 100);
+                }).catch(error => {
+                    console.error('Playback failed:', error);
+                    alert('Failed to resume playback. This might be due to browser restrictions.');
+                });
+            }
+        });
+
+        // Previous button
+        prevBtn.addEventListener('click', prevSong);
+        
+        // Next button
+        nextBtn.addEventListener('click', nextSong);
+
+        // Initialize song list
+        function initializeSongList() {
+            songListContainer.innerHTML = '';
+            
+            songs.forEach((song, index) => {
+                const songCard = document.createElement('div');
+                songCard.className = 'song-card glass p-3 rounded-lg flex items-center gap-3 cursor-pointer hover:bg-dominant-2 transition-all duration-300 border border-white/10 smooth-hover';
+                songCard.innerHTML = `
+                    <div class="w-10 h-10 bg-dominant-4 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-music text-dominant-1 text-sm"></i>
+                    </div>
+                    <div class="flex-1 text-left min-w-0">
+                        <h3 class="font-semibold text-dominant-4 truncate text-sm">${song.name}</h3>
+                        <p class="text-xs text-dominant-5 truncate">${song.artist}</p>
+                    </div>
+                `;
+                songCard.addEventListener('click', () => {
+                    playSong(index);
+                });
+                songListContainer.appendChild(songCard);
+            });
+        }
+
+        // Event listeners for members list
+        membersButton.addEventListener('click', toggleMembers);
+        closeMembers.addEventListener('click', toggleMembers);
+
+        // Close members list when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!membersList.contains(e.target) && e.target !== membersButton && !membersButton.contains(e.target)) {
+                if (!membersList.classList.contains('hidden')) {
+                    membersContainer.classList.remove('show');
+                    setTimeout(() => {
+                        membersList.classList.add('hidden');
+                    }, 400);
+                }
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeSongList();
+            
+            // Set initial state for play button
+            playPauseBtn.disabled = false;
+        });
+    </script>
+</body>
+</html>
